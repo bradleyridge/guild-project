@@ -1,0 +1,94 @@
+
+entity Partner {
+	id UUID,
+	name String,
+    createdAt Timestamp,
+    updatedAt Timestamp
+}
+
+entity User {
+	id UUID,
+    externalId String,
+    partnerId UUID,
+    firstName String,
+    lastName String,
+    email String,
+    createdAt Timestamp,
+    updatedAt Timestamp
+}
+
+// defining multiple OneToMany relationships
+relationship OneToMany {
+	// one partner to many users
+	Partner to User{partnerId}
+    
+    // one expense list to many expenses
+    ExpenseList to Expense{expenceListId}
+    
+    // one partner to many expense reports
+    Partner to ExpenseReport{partnerId}
+    
+    // one partner to many expense lists
+    Partner to ExpenseList{partnerId}
+    
+    // one partner to many expenses
+    Partner to Expense{partnerId}
+}
+
+entity ExpenseList {
+	id UUID, // object key in AWS S3 bucket
+    status ExpenseListStatus,
+    statusMessage String, // errors, etc.
+    partnerId UUID,
+    // optionally defined by user
+    externalId String,
+    name String,
+    description String,
+    // automatically created
+    createdAt Timestamp,
+    updatedAt Timestamp
+}
+
+enum ExpenseListStatus {
+	PENDING, // uploaded but not processed
+    SUCCEEDED, // files created successfully
+    ATTENTION, // some expenses need attention
+    FAILED // failed to be processed
+}
+
+entity Expense {
+	id UUID,
+    amount Double,
+    currency Currency,
+    amountUsd Double,
+    expenceListId UUID,
+    status ExpenseStatus, // defaults to PENDING
+    statusMessage String,
+    externalUserId String, // user_id || user_email || email 
+    externalId String, // optionally defiend by user
+    createdAt Timestamp,
+    updatedAt Timestamp
+}
+
+entity ExpenseReport {
+	id UUID, // corresponds to object key in AWS s3
+    partnerId UUID,
+    rangeStart Integer, // null is handled as 1
+    rangeEnd Integer, // null is handled as end of month
+    isAutomated Boolean, // automatically vs. mannually triggered
+    createdAt Timestamp,
+    updatedAt Timestamp
+}
+
+// can expand to additional currencies
+enum Currency {
+    USD, EUR, JPY
+}
+
+// favoring an enum for readability
+enum ExpenseStatus {
+	PENDING,
+    APPROVED,
+    DENIED,
+    ATTENTION // needs attention, missing information
+}
