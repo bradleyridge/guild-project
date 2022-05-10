@@ -66,6 +66,7 @@ entity Expense {
     statusMessage String,
     externalUserId String, // user_id || user_email || email 
     externalId String, // optionally defiend by user
+    expenseDate Timestamp,
     createdAt Timestamp,
     updatedAt Timestamp
 }
@@ -75,7 +76,7 @@ entity ExpenseReport {
     partnerId UUID,
     rangeStart Integer, // null is handled as 1
     rangeEnd Integer, // null is handled as end of month
-    isAutomated Boolean, // automatically vs. mannually triggered
+    requestedByUserId UUID,
     createdAt Timestamp,
     updatedAt Timestamp
 }
